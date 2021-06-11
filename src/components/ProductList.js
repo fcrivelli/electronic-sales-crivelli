@@ -1,27 +1,15 @@
 import React from "react";
-
-export default function ProductList() {
-    return <>ProductList</>
-}
-/*
 import ProductItem from "./ProductItem";
 import withContext from "../withContext";
-
 
 const ProductList = props => {
   const { products } = props.context;
 
   return (
     <>
-      <div className="hero is-primary">
-        <div className="hero-body container">
-          <h4 className="title">Our Products</h4>
-        </div>
-      </div>
-      <br />
       <div className="container">
         <div className="column columns is-multiline">
-          {products && products.length ? (
+          {products && products.length ? ( //miro si hay productos
             products.map((product, index) => (
               <ProductItem
                 product={product}
@@ -32,7 +20,7 @@ const ProductList = props => {
           ) : (
             <div className="column">
               <span className="title has-text-grey-light">
-                No products found!
+                No hay productos
               </span>
             </div>
           )}
@@ -43,4 +31,3 @@ const ProductList = props => {
 };
 
 export default withContext(ProductList);
-*/

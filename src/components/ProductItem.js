@@ -1,7 +1,16 @@
-import React from "react";
+import React, { useState } from 'react';
+import Contador from './Contador';
 
 const ProductItem = props => {
   const { product } = props;
+  const [cantidad, setCantidad] = useState(1);
+
+  const sumar = () => {
+      setCantidad(() => cantidad + 1)
+  };
+  const restar = () => {
+      setCantidad(() => cantidad - 1)
+  };
   return (
     <div className=" column is-half">
       <div className="box">
@@ -9,8 +18,9 @@ const ProductItem = props => {
           <div className="media-left">
             <figure className="image is-64x64">
               <img
+              //cargar la imagen correspondiente
                 src="https://bulma.io/images/placeholders/128x128.png"
-                alt={product.shortDesc}
+                alt={product.description}
               />
             </figure>
           </div>
@@ -19,24 +29,25 @@ const ProductItem = props => {
               {product.name}{" "}
               <span className="tag is-primary">${product.price}</span>
             </b>
-            <div>{product.shortDesc}</div>
+            <div>{product.description}</div>
             {product.stock > 0 ? (
               <small>{product.stock + " Available"}</small>
             ) : (
-              <small className="has-text-danger">Out Of Stock</small>
+              <small className="has-text-danger">Fuera de Stock</small>
             )}
             <div className="is-clearfix">
-              <button
-                className="button is-small is-outlined is-primary   is-pulled-right"
+              <button className="button is-small is-outlined is-primary   is-pulled-right"
                 onClick={() =>
-                  props.addToCart({
-                    id: product.name,
-                    product,
-                    amount: 1
-                  })
+                  <Contador
+                      sumar={sumar}
+                      restar={restar}
+                      cantidad={cantidad}
+                      producto={product}
+                      props={props}
+                  />
                 }
               >
-                Add to Cart
+                Agregar Cart
               </button>
             </div>
           </div>

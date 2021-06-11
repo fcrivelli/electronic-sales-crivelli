@@ -1,11 +1,4 @@
 import React from "react";
-
-
-export default function Cart() {
-    return <>Cart</>
-}
-
-/*
 import withContext from "../withContext";
 import CartItem from "./CartItem";
 
@@ -14,12 +7,6 @@ const Cart = props => {
   const cartKeys = Object.keys(cart || {});
   return (
     <>
-      <div className="hero is-primary">
-        <div className="hero-body container">
-          <h4 className="title">My Cart</h4>
-        </div>
-      </div>
-      <br />
       <div className="container">
         {cartKeys.length ? (
           <div className="column columns is-multiline">
@@ -34,24 +21,14 @@ const Cart = props => {
             <div className="column is-12 is-clearfix">
               <br />
               <div className="is-pulled-right">
-                <button
-                  onClick={props.context.clearCart}
-                  className="button is-warning "
-                >
-                  Clear cart
-                </button>{" "}
-                <button
-                  className="button is-success"
-                  onClick={props.context.checkout}
-                >
-                  Checkout
-                </button>
+                <button onClick={props.context.clearCart} className="button is-warning ">Limpiar cart</button>
+                <button className="button is-success" onClick={props.context.checkout}>Checkout</button>
               </div>
             </div>
           </div>
         ) : (
           <div className="column">
-            <div className="title has-text-grey-light">No item in cart!</div>
+            <div className="title has-text-grey-light">No hay Item Cart</div>
           </div>
         )}
       </div>
@@ -60,4 +37,3 @@ const Cart = props => {
 };
 
 export default withContext(Cart);
-*/
