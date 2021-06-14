@@ -1,0 +1,9 @@
+.amount{ 
+    align-items: center;
+    margin-left: 3px;
+    margin-bottom: 5px;
+    margin-right: 8px;
+    display: flex;
+    justify-content: center;
+    color: #333;
+}

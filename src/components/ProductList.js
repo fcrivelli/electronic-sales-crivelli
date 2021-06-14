@@ -3,7 +3,7 @@ import ProductItem from "./ProductItem";
 import withContext from "../withContext";
 
 const ProductList = props => {
-  const { products } = props.context;
+  const {products} = props.context; 
 
   return (
     <>
@@ -15,6 +15,9 @@ const ProductList = props => {
                 product={product}
                 key={index}
                 addToCart={props.context.addToCart}
+                amount={props.context.amount}
+                increment={props.context.increment}
+                decrement={props.context.decrement}
               />
             ))
           ) : (

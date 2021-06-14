@@ -25,7 +25,7 @@ export default class App extends Component {
 
   login = async (email, password) => {
     //hacer el login
-  }
+  };
   
   logout = e => {
     //Hacer el logout
@@ -39,11 +39,26 @@ export default class App extends Component {
   };
 
   async componentDidMount() {
-    //una vez que se montaron los componentes
-    // montar la info de la pagina al State
+    let cart = localStorage.getItem("cart");
+    let user = "";
+    const products = await axios.get('http://localhost:3000/products');
+    cart = cart? JSON.parse(cart) : {};
+
+    this.setState({ user,  products: products.data, cart });
   }
 
   addToCart = cartItem => {
+    let cart = this.state.cart;
+    if (cart[cartItem.id]) {
+      cart[cartItem.id].amount += cartItem.amount;
+    } else {
+      cart[cartItem.id] = cartItem;
+    }
+    if (cart[cartItem.id].amount > cart[cartItem.id].product.stock) {
+      cart[cartItem.id].amount = cart[cartItem.id].product.stock;
+    }
+    localStorage.setItem("cart", JSON.stringify(cart));
+    this.setState({ cart });
     //adherir un Cart
   };
 
@@ -84,7 +99,7 @@ export default class App extends Component {
           <nav className="navbar container" role="navigation" aria-label="main navigation">
             <div className="navbar-brand">
               <b className="navbar-item is-size-4 ">Electronic-Sales</b>
-              <label role="button" class="navbar-burger burger" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample"
+              <label role="button" className="navbar-burger burger" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample"
                 onClick={e => {
                   e.preventDefault();
                   this.setState({ showMenu: !this.state.showMenu });
