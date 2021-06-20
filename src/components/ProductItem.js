@@ -32,8 +32,7 @@ export default class ProductItem extends Component {
             <div className="media-left">
               <figure className="image is-64x64">
                 <img
-                //cargar la imagen correspondiente
-                  src="https://bulma.io/images/placeholders/128x128.png"
+                  src={product.image}
                   alt={product.description}
                 />
               </figure>

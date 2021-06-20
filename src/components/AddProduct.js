@@ -1,14 +1,13 @@
 import React, { Component } from "react";
 import withContext from "../withContext";
-import { Redirect } from "react-router-dom";
-import axios from 'axios';
 
 //Limpiar la carga del producto o inicializarla
 const initState = {
   name: "",
   price: "",
   stock: "",
-  description: ""
+  description: "",
+  image: ""
 };
 
 class AddProduct extends Component {
@@ -18,12 +17,13 @@ class AddProduct extends Component {
   }
 
   save = () => {
-    const { name, price, stock, description } = this.state; // Tomo valores de el state 
+    const { name, price, stock, image, description } = this.state; // Tomo valores de el state 
     this.props.context.addProduct(
       {
         name,
         price,
         description,
+        image,
         stock: stock || 0
       }, 
       () => this.setState(initState)
@@ -34,7 +34,7 @@ class AddProduct extends Component {
   handleChange = e => this.setState({ [e.target.name]: e.target.value, error: "" });
 
   render() {
-    const { name, price, stock, description } = this.state;
+    const { name, price, stock, image, description } = this.state;
 
     return (
       <>
@@ -52,6 +52,10 @@ class AddProduct extends Component {
               <div className="field">
                 <label className="label">Stock Disponible: </label>
                 <input className="input" type="number" name="stock" value={stock} onChange={this.handleChange} required/>
+              </div>
+              <div className="field">
+                <label className="label">Link image: </label>
+                <input className="input" type="text" name="image" value={image} onChange={this.handleChange} required/>
               </div>
               <div className="field">
                 <label className="label">Descripcion: </label>
