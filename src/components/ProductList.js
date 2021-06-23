@@ -1,44 +1,45 @@
-import React  from "react";
+import React, { useEffect, useState }  from "react";
 import ProductItem from "./ProductItem";
-import withContext from "../withContext";
+import { useFirebaseApp } from "reactfire";
+import 'firebase/database';
 
-const ProductList = props => {
-  const { products } = props.context;
-  const promise = new Promise((resolve, reject) => {
-      setTimeout(() => {
-        resolve("ok");
-      }, 2000);
-      setTimeout(() => {
-        reject("fail");
-      }, 4000);
-  });; 
+
+export default function ProductList () {
+  const firebase = useFirebaseApp();
+  const [ products, setProducts ] = useState([]);
+
+  useEffect(() => {
+    firebase.database().ref('products').on('value', (snapshot) =>{
+      let arrayProducts = [];
+      let map = new Map(Object.entries(snapshot.val()));
+      for (var [id, value] of map){
+        if(value !== null){
+           arrayProducts.push(value);
+        }
+      } 
+      setProducts(arrayProducts);
+    }); 
+  }, [setProducts]);
 
   return (
     <>
       <div className="container">
         <div className="column columns is-multiline">
-          {products && products.length ? ( //miro si hay productos
-            products.map((product, index) => {
-              promise.then((response) =>{
-                <ProductItem
-                product={product}
-                key={index}
-                addToCart={props.context.addToCart}
-              />
-              }).catch((error) =>{
-              });
-            })
-          ) : (
-            <div className="column">
-              <span className="title has-text-grey-light">
-                No hay productos
-              </span>
-            </div>
-          )}
+          { 
+            products && products.length ? (
+              products.map((product, index) => 
+                <ProductItem product={product} key={index} />
+              )
+            ) : (
+              <div className="column">
+                <span className="title has-text-grey-light">
+                  No hay productos
+                </span>
+              </div>
+            )
+          }
         </div>
       </div>
     </>
   );
 };
-
-export default withContext(ProductList);

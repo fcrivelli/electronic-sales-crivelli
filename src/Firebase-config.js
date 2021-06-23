@@ -1,5 +1,4 @@
-import firebase from 'firebase'
-const config = {
+export default {
     apiKey: "AIzaSyChadbxxPtMGXu_UFVsqO6bdllmwcL3qRw",
     authDomain: "electronicsales-coderhouse.firebaseapp.com",
     databaseURL: "https://electronicsales-coderhouse-default-rtdb.firebaseio.com",
@@ -8,5 +7,3 @@ const config = {
     messagingSenderId: "105470955682",
     appId: "1:105470955682:web:57ae08ac58141dac4bc7fb"
 }
-firebase.initializeApp(config);
-export default firebase;

@@ -1,13 +1,19 @@
-import React from 'react';
+import React, {Suspense} from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import "bulma/css/bulma.css";
+import firebaseConfig from './Firebase-config';
+import { FirebaseAppProvider } from 'reactfire';
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <FirebaseAppProvider firebaseConfig={firebaseConfig}>
+      <Suspense fallback={'Cargando..'}>
+        <App/>
+      </Suspense>
+    </FirebaseAppProvider>
   </React.StrictMode>,
   document.getElementById('root')
 );

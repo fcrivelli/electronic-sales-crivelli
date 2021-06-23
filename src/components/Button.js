@@ -1,7 +1,7 @@
-import React, { Component } from "react";
+import React from "react";
 
-export default class Button extends Component {
-  render() {
-    return <button className="button is-small is-outlined is-primary   is-pulled-right" onClick={this.props.action}>{this.props.title}</button>;
-  }
+export default function Button (props) {
+    return( 
+      <button className="button is-small is-outlined is-primary   is-pulled-right" onClick={props.action}>{props.title}</button>
+    );
 }
