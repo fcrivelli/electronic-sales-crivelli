@@ -1,18 +1,18 @@
 import React, { useEffect, useState } from "react";
-import { Switch, Route, Link, BrowserRouter as Router } from "react-router-dom";
-import AddProduct from './AddProduct';
-import Cart from './Cart';
-import Login from './Login';
-import ProductList from './ProductList';
+import { Link } from "react-router-dom";
+import { useFirebaseApp } from "reactfire";
+import withContext from '../withContext';
+import 'firebase/database';
 
-export default function Navbar () {
-
+function Navbar (props) {
     const [showMenu, setShowMenu ] = useState(false);
-    const [cart, setCart] = useState({});
-    const [user, setUser] = useState();
+    const user = props.context.user;
+    const firebase = useFirebaseApp();
 
-    useEffect(() =>{
-
+    useEffect( () =>{
+        firebase.database().ref('carts').on('value', (snapshot) => {
+            props.context.updateCart(snapshot.val());
+        })
     },[]);
     
     return (
@@ -35,22 +35,26 @@ export default function Navbar () {
                 {showMenu} ? "is-active" : ""
                 }`}>
                 <Link to="/products" className="navbar-item">Products</Link>
-                <Link to="/add-product" className="navbar-item">Add Product</Link>
+                { user.data ? (
+                  <Link to="/add-product" className="navbar-item">
+                    Add Product
+                  </Link>
+                ):(
+                  <Link to="/contact" className="navbar-item">
+                    Contact
+                  </Link>
+                )}
                 <Link to="/cart" className="navbar-item">Cart
-                <span className="tag is-primary" style={{ marginLeft: "5px" }}> { Object.keys({cart}).length }</span>
+                <span className="tag is-primary" style={{ marginLeft: "5px" }}> { Object.keys(props.context.carts || {}).length }</span>
                 </Link>
-                {!{user} ? (<Link to="/login" className="navbar-item">Login</Link>) : (
-                <Link to="/" className="navbar-item">Logout</Link>
+                {!user.data ? (
+                    <Link to="/login" className="navbar-item">Login</Link>
+                ) : (
+                    <Link to="/login" className="navbar-item">Logout</Link>
                 )}
             </div>
         </nav>
-        <Switch>
-            <Route exact path="/" component={ProductList} />
-            <Route exact path="/login" component={Login} />
-            <Route exact path="/cart" component={Cart} />
-            <Route exact path="/add-product" component={AddProduct} />
-            <Route exact path="/products" component={ProductList} />
-        </Switch>
     </>
     );
 }
+export default withContext(Navbar);

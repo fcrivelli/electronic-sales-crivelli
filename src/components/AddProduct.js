@@ -1,7 +1,8 @@
 import React, { Fragment, useState } from "react";
-import { useFirebaseApp } from "reactfire";
+import { useFirebaseApp, useUser } from "reactfire";
 import { Redirect } from "react-router-dom";
 import 'firebase/database';
+import 'firebase/auth';
 
 export default function AddProduct () {
   const [datos, setDatos] = useState({
@@ -12,6 +13,7 @@ export default function AddProduct () {
     image: ""
   })
   const firebase = useFirebaseApp();
+  const user = useUser();
 
   const handleChange = (event) => {
     setDatos({
@@ -33,17 +35,22 @@ export default function AddProduct () {
         image, 
         description 
       }; // Tomo valores de el state
-      firebase.database().ref(`products/${product.id}/`).set(product); 
-      setDatos(
-        { 
-          name: "",
-          price: "",
-          stock: "",
-          description: "",
-          image: "",
-          flash: { status: 'is-success', msg: 'Product created successfully' }
-        }
-      );
+      await firebase.database().ref(`products/${product.id}/`).set(product)
+      .then(function() {
+        console.log("Added Product");
+        setDatos(
+          { 
+            name: "",
+            price: "",
+            stock: "",
+            description: "",
+            image: "",
+            flash: { status: 'is-success', msg: 'Product created successfully' }
+          }
+        );
+      }).catch(function(error) {
+        console.log("Error on add product");
+      });
     } else {
       setDatos(
         { flash: { status: 'is-danger', msg: 'Please enter name and price' }}
@@ -51,7 +58,7 @@ export default function AddProduct () {
     }
   };
 
-  return (
+  return !user ? (
     <Fragment>
       <h1>Info Product:</h1>
         <form onSubmit={save}>
@@ -95,5 +102,7 @@ export default function AddProduct () {
           </div>
         </form>
     </Fragment>
-  );
+  ) : (
+    <Redirect to="/products" />
+  );;
 };

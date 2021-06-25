@@ -1,18 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import Button from "./Button";
 import "../componentsCss/Amount.css";
+import withContext from '../withContext';
 import { useFirebaseApp } from 'reactfire';
 import 'firebase/database';
 
-export default function ProductItem (props) {
+function ProductItem (props) {
   const firebase = useFirebaseApp();
   const [amount, setAmount] = useState(1);
   const { product } = props;
-  let cart = [];
 
-  useEffect(() =>{
+  useEffect( () =>{
     firebase.database().ref('carts').on('value', (snapshot) =>{
-      cart = snapshot.val();
+        props.context.updateCart(snapshot.val());
     });
   }, []);
 
@@ -24,8 +24,9 @@ export default function ProductItem (props) {
     setAmount(amount > 1? amount - 1 : amount);
   };
 
-  const addToCart = cartItem => {
+  const addToCart = async cartItem => {
     let update = false;
+    let cart = props.context.carts;
     if(cart != null){
       if (cart[cartItem.id]) {
         cart[cartItem.id].amount += cartItem.amount;
@@ -36,9 +37,10 @@ export default function ProductItem (props) {
       if (cart[cartItem.id].amount > cart[cartItem.id].product.stock) {
         cart[cartItem.id].amount = cart[cartItem.id].product.stock;
       }
-    }    
-    update ? firebase.database().ref(`carts/${cartItem.id}/`).update(cartItem.id) : 
-    firebase.database().ref(`carts/${cartItem.id}/`).set(cartItem); 
+    }
+    props.context.updateCart(cart);    
+    update ? await firebase.database().ref(`carts/${cartItem.id}/`).update(cart[cartItem.id]) : 
+    await firebase.database().ref(`carts/${cartItem.id}/`).set(cartItem); 
   }
     
   return (
@@ -89,3 +91,4 @@ export default function ProductItem (props) {
     </div>
   );
 };
+export default withContext(ProductItem);

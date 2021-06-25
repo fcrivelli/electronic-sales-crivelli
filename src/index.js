@@ -6,12 +6,15 @@ import reportWebVitals from './reportWebVitals';
 import "bulma/css/bulma.css";
 import firebaseConfig from './Firebase-config';
 import { FirebaseAppProvider } from 'reactfire';
+import { BrowserRouter } from 'react-router-dom';
 
 ReactDOM.render(
   <React.StrictMode>
     <FirebaseAppProvider firebaseConfig={firebaseConfig}>
       <Suspense fallback={'Cargando..'}>
-        <App/>
+        <BrowserRouter>
+          <App/>
+        </BrowserRouter>
       </Suspense>
     </FirebaseAppProvider>
   </React.StrictMode>,

@@ -8,7 +8,7 @@ export default function ProductList () {
   const firebase = useFirebaseApp();
   const [ products, setProducts ] = useState([]);
 
-  useEffect(() => {
+  useEffect( () => {
     firebase.database().ref('products').on('value', (snapshot) =>{
       let arrayProducts = [];
       let map = new Map(Object.entries(snapshot.val()));
