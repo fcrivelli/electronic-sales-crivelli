@@ -1,14 +1,12 @@
 import React, { Fragment, useState } from "react";
-import { useFirebaseApp, useUser } from "reactfire";
 import { Redirect } from "react-router-dom";
 import withContext from "../withContext";
 import  '../componentsCss/Login.css'; 
 import 'firebase/auth';
 
 function Login (props) {
-  const firebase = useFirebaseApp();
+  const { user, firebase } = props.context;
   const [redirectToRegister, setRedirectToRegister] = useState(false);
-  const user = props.context.user;
   const [datos, setDatos] = useState({
     email: "",
     password: ""
@@ -23,10 +21,10 @@ function Login (props) {
 
   const login = async () => {
     await firebase.auth().signInWithEmailAndPassword(datos.email, datos.password)
-    .then(()=>{
+    .then(function (){
       console.log("Success log in");
     }).catch((res) => {
-      console.log('Unauthorized');
+      console.log( "Unauthorized or fields are not complete");
     })
   }
   
@@ -41,33 +39,39 @@ function Login (props) {
 
   return(
     <Fragment>
+      <div className="hero is-primary ">
+        <div className="hero-body container">
+          <h4 className="title">Sign In</h4>
+        </div>
+      </div>
+      <br />
+      <br />
       { !redirectToRegister? (
        !user.data ? (
-          <div class="wrapper fadeInDown">
-            <div id="formContent">
-              <h2>Sign In</h2>
-              <div class="fadeIn first">
+          <div className="wrapper fadeInDown">
+            <div className="formContent">
+              <div className="fadeIn first">
                 <img src="https://image.flaticon.com/icons/png/512/911/911412.png" id="icon" alt="User Icon" />
               </div>
               <form>
-                <input type="text" id="login" class="fadeIn second" name="email" placeholder="email" onChange={handleChange} required></input>
-                <input type="text" id="password" class="fadeIn third" name="password" placeholder="password" onChange={handleChange} required></input>
-                <input type="submit" class="fadeIn fourth"  onClick={login} value="Log In"></input>   
+                <input type="email" className="fadeIn second" name="email" placeholder="email" onChange={handleChange} required></input>
+                <input type="text" className="fadeIn third" name="password" placeholder="password" onChange={handleChange} required></input>
+                <input type="submit" className="fadeIn fourth"  onClick={login} value="Log In"></input>  
               </form>
-              <div id="formFooter">
-                  <a class="underlineHover" href="#" onClick={handleChangeToRegister}>register now!</a>
+              <div className="formFooter">
+                  <button className="enlace" role="link" onClick={handleChangeToRegister}>register now!</button>
               </div>
             </div>
           </div>
         ) : (
-          <div class="wrapper fadeInDown">
-            <div id="formContent">
-              <h2 class="active"> User : {user.email} </h2>
-              <div class="fadeIn first">
+          <div className="wrapper fadeInDown">
+            <div className="formContent">
+              <h2 className="active"> User : {user.data.email} </h2>
+              <div className="fadeIn first">
                 <img src="https://image.flaticon.com/icons/png/512/911/911259.png" id="icon" alt="User Icon" />
               </div>
-              <div class="fadeIn second">
-                <button className="button is-primary is-outlined is-pulled-center" onClick={logout}>LogOut</button>
+              <div className="fadeIn second">
+                <input type="submit" className="fadeIn fourth"  onClick={logout} value="Log Out"></input> 
               </div>
             </div>
           </div>

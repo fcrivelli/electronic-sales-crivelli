@@ -1,19 +1,24 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { useFirebaseApp } from "reactfire";
 import withContext from '../withContext';
-import 'firebase/database';
 
 function Navbar (props) {
     const [showMenu, setShowMenu ] = useState(false);
-    const user = props.context.user;
-    const firebase = useFirebaseApp();
+    const { user, firebase } = props.context;
 
-    useEffect( () =>{
-        firebase.database().ref('carts').on('value', (snapshot) => {
+    const getCarts = () => {
+        let username = user.data.email;
+        username = username.replace(/./g, '');
+        firebase.database().ref(`user/${username}/carts`).on('value', (snapshot) => {
             props.context.updateCart(snapshot.val());
         })
-    },[]);
+    };
+
+    useEffect( () =>{
+        if (user.data) {
+            getCarts();
+        }
+    }, [user]);
     
     return (
     <>

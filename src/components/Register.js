@@ -1,16 +1,16 @@
 import React, { Fragment, useState } from "react";
-import { useFirebaseApp } from "reactfire";
 import { Redirect } from "react-router-dom";
 import  '../componentsCss/Login.css'; 
 import 'firebase/auth';
+import withContext from "../withContext";
 
-export default function Register () {
-    const firebase = useFirebaseApp();
+function Register (props) {
+    const { firebase } = props.context;
     const [redirectToLogIn, setRedirectToLogIn] = useState(false);
     const [datos, setDatos] = useState({
       email: "",
       password: ""
-    });
+    });  
    
     const handleChange = (event) => {
       setDatos({
@@ -20,11 +20,11 @@ export default function Register () {
     }
   
     const register = async () => {
-      await firebase.auth().createUserWithEmailAndPassword(datos.email, datos.password).
-      then(() => {
+      await firebase.auth().createUserWithEmailAndPassword(datos.email, datos.password)
+      .then(function() {
         console.log("User was added");
       }).catch(() =>{
-        console.log("Error on create user");
+          console.log("Error on create user");
       });
     }
 
@@ -34,27 +34,34 @@ export default function Register () {
   
     return(
       <Fragment>
+        <div className="hero is-primary ">
+        <div className="hero-body container">
+          <h4 className="title">Sign Up</h4>
+        </div>
+        </div>
+        <br />
+        <br />
         { !redirectToLogIn? (
-            <div class="wrapper fadeInDown">
-                <div id="formContent">
-                <h2>Sign Up</h2>
-                <div class="fadeIn first">
-                    <img src="https://image.flaticon.com/icons/png/512/911/911412.png" id="icon" alt="User Icon" />
-                </div>
-                <form>
-                    <input type="text" id="login" class="fadeIn second" name="email" placeholder="email" onChange={handleChange} required></input>
-                    <input type="text" id="password" class="fadeIn third" name="password" placeholder="password" onChange={handleChange} required></input>
-                    <input type="submit" class="fadeIn fourth"  onClick={register} value="Register"></input>   
-                </form>
-                <div id="formFooter">
-                    <a class="underlineHover" href="#" onClick={handleChangeToLogIn}>Back to LogIn</a>
-                </div>
+            <div className="wrapper fadeInDown">
+                <div className="formContent">
+                  <div className="fadeIn first">
+                      <img src="https://image.flaticon.com/icons/png/512/911/911412.png" id="icon" alt="User Icon" />
+                  </div>
+                  <form>
+                      <input type="email" className="fadeIn second" name="email" placeholder="email" onChange={handleChange} required></input>
+                      <input type="text" className="fadeIn third" name="password" placeholder="password" onChange={handleChange} required></input>
+                      <input type="submit" className="fadeIn fourth"  onClick={register} value="Sign Up"></input>   
+                  </form>
+                  <div id="formFooter">
+                      <button className="enlace" role="link" onClick={handleChangeToLogIn}>Back to LogIn</button>
+                  </div>
                 </div>
             </div>
             ) : (
             <Redirect to="/login" />
             )
-        }   
+        }
       </Fragment>
     )
   };
+  export default withContext(Register);

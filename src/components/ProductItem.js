@@ -1,20 +1,29 @@
 import React, { useEffect, useState } from 'react';
-import Button from "./Button";
+import ItemCount from "./ItemCount";
 import "../componentsCss/Amount.css";
+import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
 import withContext from '../withContext';
-import { useFirebaseApp } from 'reactfire';
-import 'firebase/database';
 
 function ProductItem (props) {
-  const firebase = useFirebaseApp();
   const [amount, setAmount] = useState(1);
   const { product } = props;
+  const { user, firebase, carts } = props.context;
+
+  const getCarts = () => {
+    let username = user.data.email;
+      username = username.replace(/./g, '');
+      firebase.database().ref(`carts/${username}`).on('value', (snapshot) =>{
+          props.context.updateCart(snapshot.val());
+    });
+  };
+
 
   useEffect( () =>{
-    firebase.database().ref('carts').on('value', (snapshot) =>{
-        props.context.updateCart(snapshot.val());
-    });
+    if(user.data){
+      getCarts();
+    }
   }, []);
+
 
   const incrementCount = () => {
     setAmount(amount + 1);
@@ -26,21 +35,40 @@ function ProductItem (props) {
 
   const addToCart = async cartItem => {
     let update = false;
-    let cart = props.context.carts;
-    if(cart != null){
-      if (cart[cartItem.id]) {
-        cart[cartItem.id].amount += cartItem.amount;
-        update = true;
-      } else {
-        cart[cartItem.id] = cartItem;
+    let cart = carts;
+    if(user.data){
+      if(cart != null){
+        if (cart[cartItem.id]) {
+          cart[cartItem.id].amount += cartItem.amount;
+          update = true;
+        } else {
+          cart[cartItem.id] = cartItem;
+        }
+        if (cart[cartItem.id].amount > cart[cartItem.id].product.stock) {
+          cart[cartItem.id].amount = cart[cartItem.id].product.stock;
+        }
       }
-      if (cart[cartItem.id].amount > cart[cartItem.id].product.stock) {
-        cart[cartItem.id].amount = cart[cartItem.id].product.stock;
-      }
+      props.context.updateCart(cart);
+      let username = user.data.email;
+      username = username.replace(/./g, ''); 
+      update ? (
+        await firebase.database().ref(`user/${username}/carts/${cartItem.id}/`).update(cart[cartItem.id])
+        .then(function (){
+            console.log("Cart was updated");
+        }).catch((error) => {
+            console.log("Cart was not updated");
+        })
+      ) : (
+        await firebase.database().ref(`user/${username}/carts/${cartItem.id}/`).set(cartItem)
+        .then(function (){
+          console.log("The product was added to cart");
+        }).catch((error) => {
+            console.log("Error on add product to cart");
+        })
+      )
+    } else {
+        console.log("Please login first");
     }
-    props.context.updateCart(cart);    
-    update ? await firebase.database().ref(`carts/${cartItem.id}/`).update(cart[cartItem.id]) : 
-    await firebase.database().ref(`carts/${cartItem.id}/`).set(cartItem); 
   }
     
   return (
@@ -49,9 +77,7 @@ function ProductItem (props) {
         <div className="media">
           <div className="media-left">
             <figure className="image is-64x64">
-              <img
-                src={product.image}
-              />
+              <img src ={product.image}/>
             </figure>
           </div>
           <div className="media-content">
@@ -72,23 +98,23 @@ function ProductItem (props) {
                     id: product.name,
                     product,
                     amount: amount 
-                  }) 
+                  })
                 }
-              >
-                Add to Cart
+              ><ShoppingCartIcon/>
+              <span className="tag is-primary" style={{ margin: "5px" }}>{amount}</span>   
+               Add to Cart
               </button>
               <div>
-                <div className="buttons">
-                    <Button title={"-"} action={decrementCount} />
-                    <h1 className="amount">{amount}</h1>
-                    <Button title={"+"} action={incrementCount} />
-                </div>
+                <ItemCount
+                  incrementCount={incrementCount}
+                  decrementCount= {decrementCount} 
+                />
               </div>
             </div>
           </div>
         </div>
       </div>
     </div>
-  );
+ );
 };
 export default withContext(ProductItem);

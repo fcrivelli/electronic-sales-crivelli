@@ -1,28 +1,39 @@
 import React, { useEffect, useState }  from "react";
 import ProductItem from "./ProductItem";
-import { useFirebaseApp } from "reactfire";
-import 'firebase/database';
+import withContext from "../withContext";
 
-
-export default function ProductList () {
-  const firebase = useFirebaseApp();
+function ProductList (props) {
+  const { firebase } = props.context;
   const [ products, setProducts ] = useState([]);
 
-  useEffect( () => {
-    firebase.database().ref('products').on('value', (snapshot) =>{
+  const getProducts = () => {
+    firebase.firestore().collection('product').get().then((snapshot) =>{
       let arrayProducts = [];
-      let map = new Map(Object.entries(snapshot.val()));
+      let map = new Map(Object.entries(snapshot.docs.map(doc => doc.data())));
       for (var [id, value] of map){
-        if(value !== null){
-           arrayProducts.push(value);
+        if(value != null){
+          value.products.forEach(function(i){
+            arrayProducts.push(i);
+          });
         }
       } 
       setProducts(arrayProducts);
-    }); 
-  }, [setProducts]);
+    });
+  };  
+
+  useEffect( () => {
+    getProducts();
+  }, []);
 
   return (
     <>
+      <div className="hero is-primary ">
+        <div className="hero-body container">
+          <h4 className="title">Our Products</h4>
+        </div>
+      </div>
+      <br />
+      <br />
       <div className="container">
         <div className="column columns is-multiline">
           { 
@@ -33,7 +44,7 @@ export default function ProductList () {
             ) : (
               <div className="column">
                 <span className="title has-text-grey-light">
-                  No hay productos
+                  No products
                 </span>
               </div>
             )
@@ -43,3 +54,4 @@ export default function ProductList () {
     </>
   );
 };
+export default withContext(ProductList);

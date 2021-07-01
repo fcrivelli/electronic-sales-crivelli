@@ -1,10 +1,8 @@
 import React, { Fragment, useState } from "react";
-import { useFirebaseApp, useUser } from "reactfire";
 import { Redirect } from "react-router-dom";
-import 'firebase/database';
-import 'firebase/auth';
+import withContext from "../withContext";
 
-export default function AddProduct () {
+function AddProduct (props) {
   const [datos, setDatos] = useState({
     name: "",
     price: "",
@@ -12,8 +10,7 @@ export default function AddProduct () {
     description: "",
     image: ""
   })
-  const firebase = useFirebaseApp();
-  const user = useUser();
+  const { user, firebase } = props.context;
 
   const handleChange = (event) => {
     setDatos({
@@ -37,28 +34,23 @@ export default function AddProduct () {
       }; // Tomo valores de el state
       await firebase.database().ref(`products/${product.id}/`).set(product)
       .then(function() {
-        console.log("Added Product");
-        setDatos(
-          { 
-            name: "",
-            price: "",
-            stock: "",
-            description: "",
-            image: "",
-            flash: { status: 'is-success', msg: 'Product created successfully' }
-          }
-        );
+        console.log("Product created successfully");
+        setDatos({ 
+          name: "",
+          price: "",
+          stock: "",
+          description: "",
+          image: ""
+        });
       }).catch(function(error) {
-        console.log("Error on add product");
+        console.log("Error on product created");
       });
     } else {
-      setDatos(
-        { flash: { status: 'is-danger', msg: 'Please enter name and price' }}
-      );
+        console.log("Please name and price are required");
     }
   };
 
-  return !user ? (
+  return user.data ? (
     <Fragment>
       <h1>Info Product:</h1>
         <form onSubmit={save}>
@@ -84,11 +76,6 @@ export default function AddProduct () {
                 <label className="label">Descripcion: </label>
                 <input className="input" type="text" placeholder="Add description" name="description" onChange={handleChange}/>
               </div>
-              {datos.flash && (
-                <div className={`notification ${datos.flash.status}`}>
-                  {datos.flash.msg}
-                </div>
-              )}
               <div className="field is-clearfix">
                 <button
                   className="button is-primary is-outlined is-pulled-right"
@@ -106,3 +93,4 @@ export default function AddProduct () {
     <Redirect to="/products" />
   );;
 };
+export default withContext(AddProduct)

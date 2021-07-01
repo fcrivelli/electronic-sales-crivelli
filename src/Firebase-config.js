@@ -1,4 +1,4 @@
-export default {
+const config = {
     apiKey: "AIzaSyChadbxxPtMGXu_UFVsqO6bdllmwcL3qRw",
     authDomain: "electronicsales-coderhouse.firebaseapp.com",
     databaseURL: "https://electronicsales-coderhouse-default-rtdb.firebaseio.com",
@@ -7,3 +7,4 @@ export default {
     messagingSenderId: "105470955682",
     appId: "1:105470955682:web:57ae08ac58141dac4bc7fb"
 }
+export default config;
