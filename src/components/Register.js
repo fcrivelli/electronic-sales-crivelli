@@ -1,8 +1,9 @@
 import React, { Fragment, useState } from "react";
 import { Redirect } from "react-router-dom";
 import  '../componentsCss/Login.css'; 
-import 'firebase/auth';
 import withContext from "../withContext";
+import swal from 'sweetalert';
+import 'firebase/auth';
 
 function Register (props) {
     const { firebase } = props.context;
@@ -22,9 +23,9 @@ function Register (props) {
     const register = async () => {
       await firebase.auth().createUserWithEmailAndPassword(datos.email, datos.password)
       .then(function() {
-        console.log("User was added");
+        swal("Great!", "User was added", "success");
       }).catch(() =>{
-          console.log("Error on create user");
+        swal("Ups!", "Error on create user", "error");
       });
     }
 
@@ -42,24 +43,24 @@ function Register (props) {
         <br />
         <br />
         { !redirectToLogIn? (
-            <div className="wrapper fadeInDown">
-                <div className="formContent">
-                  <div className="fadeIn first">
-                      <img src="https://image.flaticon.com/icons/png/512/911/911412.png" id="icon" alt="User Icon" />
-                  </div>
-                  <form>
-                      <input type="email" className="fadeIn second" name="email" placeholder="email" onChange={handleChange} required></input>
-                      <input type="text" className="fadeIn third" name="password" placeholder="password" onChange={handleChange} required></input>
-                      <input type="submit" className="fadeIn fourth"  onClick={register} value="Sign Up"></input>   
-                  </form>
-                  <div id="formFooter">
-                      <button className="enlace" role="link" onClick={handleChangeToLogIn}>Back to LogIn</button>
-                  </div>
-                </div>
+          <div className="wrapper fadeInDown">
+            <div className="formContent">
+              <div className="fadeIn first">
+                <img src="https://image.flaticon.com/icons/png/512/911/911412.png" id="icon" alt="User Icon" />
+              </div>
+              <form>
+                <input type="email" className="fadeIn second" name="email" placeholder="email" onChange={handleChange} required></input>
+                <input type="text" className="fadeIn third" name="password" placeholder="password" onChange={handleChange} required></input>
+                <input type="submit" className="fadeIn fourth"  onClick={register} value="Sign Up"></input>  
+              </form>
+              <div className="formFooter">
+                  <button className="enlace" role="link" onClick={handleChangeToLogIn}>back login!</button>
+              </div>
             </div>
-            ) : (
-            <Redirect to="/login" />
-            )
+          </div>
+          ) : (
+          <Redirect to="/login" />
+          )
         }
       </Fragment>
     )

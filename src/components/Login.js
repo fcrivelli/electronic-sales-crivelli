@@ -2,7 +2,7 @@ import React, { Fragment, useState } from "react";
 import { Redirect } from "react-router-dom";
 import withContext from "../withContext";
 import  '../componentsCss/Login.css'; 
-import 'firebase/auth';
+import swal from 'sweetalert';
 
 function Login (props) {
   const { user, firebase } = props.context;
@@ -22,9 +22,9 @@ function Login (props) {
   const login = async () => {
     await firebase.auth().signInWithEmailAndPassword(datos.email, datos.password)
     .then(function (){
-      console.log("Success log in");
+      swal("Welcome!", `${datos.email}`, "success");
     }).catch((res) => {
-      console.log( "Unauthorized or fields are not complete");
+      swal("Ups!", "Unauthorized or fields are not complete", "error");
     })
   }
   

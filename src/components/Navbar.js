@@ -1,25 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import withContext from '../withContext';
 
 function Navbar (props) {
     const [showMenu, setShowMenu ] = useState(false);
-    const { user, firebase } = props.context;
+    const { user, carts } = props.context;
 
-    const getCarts = () => {
-        let username = user.data.email;
-        username = username.replace(/./g, '');
-        firebase.database().ref(`user/${username}/carts`).on('value', (snapshot) => {
-            props.context.updateCart(snapshot.val());
-        })
-    };
-
-    useEffect( () =>{
-        if (user.data) {
-            getCarts();
-        }
-    }, [user]);
-    
     return (
     <>
         <nav className="navbar container" role="navigation" aria-label="main navigation">
@@ -50,7 +36,7 @@ function Navbar (props) {
                   </Link>
                 )}
                 <Link to="/cart" className="navbar-item">Cart
-                <span className="tag is-primary" style={{ marginLeft: "5px" }}> { Object.keys(props.context.carts || {}).length }</span>
+                <span className="tag is-primary" style={{ marginLeft: "5px" }}> { Object.keys(carts || {}).length }</span>
                 </Link>
                 {!user.data ? (
                     <Link to="/login" className="navbar-item">Login</Link>

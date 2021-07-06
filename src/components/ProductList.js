@@ -1,29 +1,9 @@
-import React, { useEffect, useState }  from "react";
+import React from "react";
 import ProductItem from "./ProductItem";
 import withContext from "../withContext";
 
 function ProductList (props) {
-  const { firebase } = props.context;
-  const [ products, setProducts ] = useState([]);
-
-  const getProducts = () => {
-    firebase.firestore().collection('product').get().then((snapshot) =>{
-      let arrayProducts = [];
-      let map = new Map(Object.entries(snapshot.docs.map(doc => doc.data())));
-      for (var [id, value] of map){
-        if(value != null){
-          value.products.forEach(function(i){
-            arrayProducts.push(i);
-          });
-        }
-      } 
-      setProducts(arrayProducts);
-    });
-  };  
-
-  useEffect( () => {
-    getProducts();
-  }, []);
+  const { products } = props.context;
 
   return (
     <>

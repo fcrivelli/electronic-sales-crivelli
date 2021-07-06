@@ -2,14 +2,14 @@ import React, { useEffect, useState } from "react";
 import CartItem from "./CartItem";
 import withContext from "../withContext";
 import { Redirect } from "react-router-dom";
+import swal from 'sweetalert';
 
  function Cart (props) {
-  const [products, setProducts] = useState([]);
-  const [cartKeys, setCartKeys] = useState(Object.keys({}));
-  const { user, carts, firebase } = props.context;
+  const { user, carts, firebase, products } = props.context;
+  const [cartKeys, setCartKeys] = useState(Object.keys(carts || {}));
   const [ priceTot, setPriceTot ] = useState();
 
-  const calculatePriceTotal = () => {
+  const calculatePriceTotal = (carts) => {
     let priceTotal = 0;
     if(carts != null){
       let map = new Map(Object.entries(carts));
@@ -22,34 +22,8 @@ import { Redirect } from "react-router-dom";
     } 
   };
 
-  const getCarts = () => {
-    let username = user.data.email;
-    username = username.replace(/./g, '');
-    firebase.database().ref(`user/${username}/carts`).on('value', (snapshot) =>{
-      props.context.updateCart(snapshot.val());
-      setCartKeys(Object.keys(snapshot.val() || {}));
-      calculatePriceTotal();
-    });
-  };
-
-  const getProducts = () => {
-    firebase.database().ref('products').on('value', (snapshot) =>{
-      let arrayProducts = [];
-      let map = new Map(Object.entries(snapshot.val()));
-      for (var [id, value] of map){
-        if(value !== null){
-           arrayProducts.push(value);
-        }
-      } 
-      setProducts(arrayProducts);
-    })
-  };
-
   useEffect( () =>{
-    if(user.data){
-      getCarts();
-    }
-    getProducts();
+    calculatePriceTotal(carts);
   }, []);
 
   const removeFromCart = async cartItemId => {
@@ -57,26 +31,26 @@ import { Redirect } from "react-router-dom";
     props.context.updateCart(cartList);
     setCartKeys(Object.keys(cartList || {}));
     let username = user.data.email;
-    username = username.replace(/./g, '');
+    username = username.replaceAll('.', '');
     await firebase.database().ref(`user/${username}/carts/${cartItemId}/`).remove()
     .then(function() {
-        console.log(`${cartItemId} was removed`);
-        calculatePriceTotal();
+      swal("Great!", `${cartItemId} was removed`, "success");
+      calculatePriceTotal(cartList);
     }).catch(function(error) {
-        console.log( `${cartItemId} was a problem on remove it`);
+      swal("Ups!", `${cartItemId} was a problem on remove it`, "error");
    });
   };
   
   const clearCart = async () => {
     let cart = {};
     let username = user.data.email;
-    username = username.replace(/./g, '');
+    username = username.replaceAll('.', '');
     await firebase.database().ref(`user/${username}/carts`).remove()
     .then(function() {
-        console.log(`List of Carts was removed`);
+        swal("Great!", `List of Carts was removed`, "success");
         calculatePriceTotal();
     }).catch(function() {
-        console.log(`List of Carts was not removed`);
+        swal("Ups!", `List of Carts was not removed`, "error");
     });
     props.context.updateCart(cart);
     setCartKeys(Object.keys(cart || {}));
@@ -89,14 +63,14 @@ import { Redirect } from "react-router-dom";
         p.stock = p.stock - cart[p.name].amount;
         firebase.database().ref(`products/${p.id}/`).update(p)
         .then(function() {
-          console.log(`Product id ${p.id} was updated`);
+          swal("Great!", `Product id ${p.id} was updated`, "success");
         }).catch(function(error) {
-          console.log(`Product id ${p.id} was not updated`);
+          swal("Great!", `Product id ${p.id} was not updated`, "error");
         });
       }
       return p;
     }).then(function() {
-      setProducts({ productsList });
+      props.context.updateProducts(productsList);
       clearCart();
     }).catch(function(error) {
     });

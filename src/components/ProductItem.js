@@ -1,29 +1,14 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import ItemCount from "./ItemCount";
 import "../componentsCss/Amount.css";
 import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
 import withContext from '../withContext';
+import swal from 'sweetalert';
 
 function ProductItem (props) {
   const [amount, setAmount] = useState(1);
   const { product } = props;
   const { user, firebase, carts } = props.context;
-
-  const getCarts = () => {
-    let username = user.data.email;
-      username = username.replace(/./g, '');
-      firebase.database().ref(`carts/${username}`).on('value', (snapshot) =>{
-          props.context.updateCart(snapshot.val());
-    });
-  };
-
-
-  useEffect( () =>{
-    if(user.data){
-      getCarts();
-    }
-  }, []);
-
 
   const incrementCount = () => {
     setAmount(amount + 1);
@@ -50,24 +35,25 @@ function ProductItem (props) {
       }
       props.context.updateCart(cart);
       let username = user.data.email;
-      username = username.replace(/./g, ''); 
+      username = username.replaceAll('.', ''); 
       update ? (
         await firebase.database().ref(`user/${username}/carts/${cartItem.id}/`).update(cart[cartItem.id])
         .then(function (){
-            console.log("Cart was updated");
+          swal("Great!", "Product is on your Cart", "success");
         }).catch((error) => {
-            console.log("Cart was not updated");
+          swal("Ups!", "Error on add to Cart", "error");
         })
       ) : (
         await firebase.database().ref(`user/${username}/carts/${cartItem.id}/`).set(cartItem)
         .then(function (){
-          console.log("The product was added to cart");
+            swal("Great!", "The product was added to cart", "success");
         }).catch((error) => {
-            console.log("Error on add product to cart");
+            swal("Ups!", "Error on add product to cart", "error");
         })
       )
     } else {
-        console.log("Please login first");
+        swal("Join Us!", "Please login first", "warning");
+        console.log();
     }
   }
     

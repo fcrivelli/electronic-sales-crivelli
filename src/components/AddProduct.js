@@ -1,6 +1,7 @@
 import React, { Fragment, useState } from "react";
 import { Redirect } from "react-router-dom";
 import withContext from "../withContext";
+import swal from 'sweetalert';
 
 function AddProduct (props) {
   const [datos, setDatos] = useState({
@@ -10,7 +11,7 @@ function AddProduct (props) {
     description: "",
     image: ""
   })
-  const { user, firebase } = props.context;
+  const { user, firebase, products } = props.context;
 
   const handleChange = (event) => {
     setDatos({
@@ -34,7 +35,9 @@ function AddProduct (props) {
       }; // Tomo valores de el state
       await firebase.database().ref(`products/${product.id}/`).set(product)
       .then(function() {
-        console.log("Product created successfully");
+        products.push(product);
+        props.context.updateProducts(products);
+        swal("Great!", "Product created successfully", "success");
         setDatos({ 
           name: "",
           price: "",
@@ -43,10 +46,11 @@ function AddProduct (props) {
           image: ""
         });
       }).catch(function(error) {
-        console.log("Error on product created");
+        swal("Ups!", "Error on product created", "error");
       });
     } else {
-        console.log("Please name and price are required");
+        swal("Help us!", "Please name and price are required", "warning");
+        console.log();
     }
   };
 
