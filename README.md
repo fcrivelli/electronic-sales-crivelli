@@ -1,3 +1,40 @@
+# Como es la App
+En la misma se podra comprar desde la pagina principal en donde se encuentra todo el inventario de nuestros productos.
+Para poder realizar una compra se requerira agregar los productos a la carta utilizando el boton del carrito.
+Por otro lado la app contara con la configuracion de permisos para poder agregar productos a el inventario.
+
+# Que formato se uso
+La app se realizo con Node js y react. La misma cuenta con un Root de rutas para las paginas que son Products, Contact, 
+Add Product, LogIn (dentro LogOut y Register) y Cart.
+
+# Como se manejo la información 
+Se utiliza un Context Provider para manejar todas las variables mas dinamicas de la app. 
+La estructura se hizo a base de funciones no de clases utilizando hook con el fin de renderizar las pantallas a partir de los 
+cambios en las variables que se muestran en las diferentes pantallas.
+
+# Diseño de la App 
+Se utilizo como diseño de pantalla una estructura a partir de bulma.css.
+
+# Firebase Database (Real Time)
+Para la escritura , sobrescritura y eliminacion de los datos que se utilizan en la pagina se hace a partir de firebase, 
+especificamente firebase Database.
+La estructura a partir de objetos esta compuesta por :
+{
+  products: [], por aca se encontrara el listado de productos.
+  user: [
+	username0:{ cada usuario tendra una lista de carts. 
+           carts:[
+		esto tendra una referencia por usuario y un producto asociado
+	   ]
+	}
+  ]
+}
+
+#Firebase Authentification
+Se utilizo la posibilidad de crear, iniciar sesión y salir de la sesión.
+El usuario podra ingresar con permisos admin utilizando el checkbox de admin. 
+
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
