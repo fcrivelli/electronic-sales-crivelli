@@ -5,9 +5,7 @@ import { Redirect } from "react-router-dom";
 import swal from 'sweetalert';
 
  function Cart (props) {
-  const { user, carts, firebase, products } = props.context;
-  const [cartKeys, setCartKeys] = useState(Object.keys(carts || {}));
-  const [ priceTot, setPriceTot ] = useState();
+  const { username, carts, firebase, products } = props.context;
 
   const calculatePriceTotal = (carts) => {
     let priceTotal = 0;
@@ -18,42 +16,38 @@ import swal from 'sweetalert';
           priceTotal = priceTotal + (value.product.price)*value.amount;
         }
       }
-      setPriceTot(priceTotal);
-    } 
+    }
+    return priceTotal;
   };
 
   useEffect( () =>{
-    calculatePriceTotal(carts);
+    if(!username){
+      swal("Ups!", `Please login with us`, "warning");
+    }
   }, []);
 
   const removeFromCart = async cartItemId => {
     const cartList = Object.values(carts).filter((item) => item.id !== cartItemId);
     props.context.updateCart(cartList);
-    setCartKeys(Object.keys(cartList || {}));
-    let username = user.data.email;
-    username = username.replaceAll('.', '');
-    await firebase.database().ref(`user/${username}/carts/${cartItemId}/`).remove()
+    await firebase.database().ref(`user/${username.replaceAll('.', '')}/carts/${cartItemId}/`).remove()
     .then(function() {
       swal("Great!", `${cartItemId} was removed`, "success");
-      calculatePriceTotal(cartList);
     }).catch(function(error) {
       swal("Ups!", `${cartItemId} was a problem on remove it`, "error");
    });
   };
   
-  const clearCart = async () => {
+  const clearCart = async (fromCheckOut) => {
     let cart = {};
-    let username = user.data.email;
-    username = username.replaceAll('.', '');
-    await firebase.database().ref(`user/${username}/carts`).remove()
-    .then(function() {
-        swal("Great!", `List of Carts was removed`, "success");
-        calculatePriceTotal();
+    await firebase.database().ref(`user/${username.replaceAll('.', '')}/carts`).remove()
+    .then(function() {   
+        if(!fromCheckOut){
+          swal("Great!", `List of Carts was removed`, "success");
+        }
+        props.context.updateCart(cart);
     }).catch(function() {
         swal("Ups!", `List of Carts was not removed`, "error");
     });
-    props.context.updateCart(cart);
-    setCartKeys(Object.keys(cart || {}));
   };
 
   const checkout = async () => {
@@ -61,32 +55,37 @@ import swal from 'sweetalert';
     const productsList = products.map(p => {
       if (cart[p.name]) {
         p.stock = p.stock - cart[p.name].amount;
-        firebase.database().ref(`products/${p.id}/`).update(p)
-        .then(function() {
-          swal("Great!", `Product id ${p.id} was updated`, "success");
-        }).catch(function(error) {
-          swal("Great!", `Product id ${p.id} was not updated`, "error");
-        });
       }
       return p;
-    }).then(function() {
+    });
+    await firebase.database().ref(`products`).set(productsList)
+    .then(function() {
+      swal("Thank you!", `The products will arrive your home soon`, "success");
       props.context.updateProducts(productsList);
-      clearCart();
+      clearCart(true);
     }).catch(function(error) {
+      swal("Ups!", `Please try again or later`, "error");
     });
   }
   
 
-  return user.data ? (
+  return username ? (
     <>
+      <div className="hero is-primary ">
+        <div className="hero-body container">
+          <h4 className="title">Cart</h4>
+        </div>
+      </div>
+      <br />
+      <br />
       <div className="container">
-        {cartKeys.length ? (
+        {carts != null && Object.keys(carts || {}).length ? (
           <div className="column columns is-multiline">
-            {cartKeys.map(key => (
+            {Object.keys(carts).map(key => (
               <CartItem
                 cartKey={key}
                 key={key}
-                cartItem={props.context.carts[key]}
+                cartItem={carts[key]}
                 removeFromCart={removeFromCart}
               />
             ))}
@@ -95,9 +94,9 @@ import swal from 'sweetalert';
               <div className="is-pulled-right">
                 <b style={{ textTransform: "capitalize" }}>
                   Total price:{" "}
-                  <span className="tag is-primary">${priceTot}</span>
+                  <span className="tag is-primary">${calculatePriceTotal(carts)}</span>
                 </b>
-                <button onClick={clearCart} className="button is-warning ">Clear cart</button>
+                <button onClick={() => clearCart(false)} className="button is-warning ">Clear cart</button>
                 <button className="button is-success" onClick={checkout}>Checkout</button>
               </div>
             </div>

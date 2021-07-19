@@ -13,6 +13,7 @@ export default function App (){
   const firebase = useFirebaseApp();
   const user = useUser();
   const [username, setUsername] = useState("");
+  const [accessLevel, setAccessLevel] = useState(false);
 
   const updateCart = (carts) => {
     setCart(carts);
@@ -24,6 +25,10 @@ export default function App (){
 
   const updateUsername = (username) =>{
     setUsername(username);
+  }
+
+  const updateAccessLevel = (accessLevel) => {
+    setAccessLevel(accessLevel);
   }
 
   const getCarts = () => {
@@ -55,16 +60,21 @@ export default function App (){
       updateUsername(user.data.email);
       getCarts();
     }
+    if(user.data == null && username !== ''){
+      updateUsername('');
+    }
   }, [user]);
 
   return (
     <Context.Provider value={{
       carts: cart,
-      user: user,
+      username: username,
       products: products,
+      accessLevel: accessLevel,
       firebase: firebase,
       updateCart: updateCart,
-      updateProducts: updateProducts
+      updateProducts: updateProducts,
+      updateAccessLevel: updateAccessLevel,
     }}>
     <div className="App">
         <Navbar/>

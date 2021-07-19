@@ -24,6 +24,7 @@ function Register (props) {
       await firebase.auth().createUserWithEmailAndPassword(datos.email, datos.password)
       .then(function() {
         swal("Great!", "User was added", "success");
+        setRedirectToLogIn(true);
       }).catch(() =>{
         swal("Ups!", "Error on create user", "error");
       });
@@ -42,24 +43,25 @@ function Register (props) {
         </div>
         <br />
         <br />
-        { !redirectToLogIn? (
-          <div className="wrapper fadeInDown">
-            <div className="formContent">
-              <div className="fadeIn first">
-                <img src="https://image.flaticon.com/icons/png/512/911/911412.png" id="icon" alt="User Icon" />
-              </div>
-              <form>
-                <input type="email" className="fadeIn second" name="email" placeholder="email" onChange={handleChange} required></input>
-                <input type="text" className="fadeIn third" name="password" placeholder="password" onChange={handleChange} required></input>
-                <input type="submit" className="fadeIn fourth"  onClick={register} value="Sign Up"></input>  
-              </form>
-              <div className="formFooter">
-                  <button className="enlace" role="link" onClick={handleChangeToLogIn}>back login!</button>
+        { 
+          !redirectToLogIn? (
+            <div className="wrapper fadeInDown">
+              <div className="formContent">
+                <div className="fadeIn first">
+                  <img src="https://image.flaticon.com/icons/png/512/911/911412.png" id="icon" alt="User Icon" />
+                </div>
+                <div>
+                  <input type="email" className="fadeIn second" name="email" placeholder="email" onChange={handleChange} required></input>
+                  <input type="text" className="fadeIn third" name="password" placeholder="password" onChange={handleChange} required></input>
+                  <input type="submit" className="fadeIn fourth"  onClick={register} value="Sign Up"></input>  
+                </div>
+                <div className="formFooter">
+                    <button className="enlace" role="link" onClick={handleChangeToLogIn}>back login!</button>
+                </div>
               </div>
             </div>
-          </div>
           ) : (
-          <Redirect to="/login" />
+            <Redirect to="/login" />
           )
         }
       </Fragment>

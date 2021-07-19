@@ -4,7 +4,7 @@ import withContext from '../withContext';
 
 function Navbar (props) {
     const [showMenu, setShowMenu ] = useState(false);
-    const { user, carts } = props.context;
+    const { username, carts, accessLevel } = props.context;
 
     return (
     <>
@@ -26,7 +26,7 @@ function Navbar (props) {
                 {showMenu} ? "is-active" : ""
                 }`}>
                 <Link to="/products" className="navbar-item">Products</Link>
-                { user.data ? (
+                { username && accessLevel ? (
                   <Link to="/add-product" className="navbar-item">
                     Add Product
                   </Link>
@@ -38,7 +38,7 @@ function Navbar (props) {
                 <Link to="/cart" className="navbar-item">Cart
                 <span className="tag is-primary" style={{ marginLeft: "5px" }}> { Object.keys(carts || {}).length }</span>
                 </Link>
-                {!user.data ? (
+                {!username ? (
                     <Link to="/login" className="navbar-item">Login</Link>
                 ) : (
                     <Link to="/login" className="navbar-item">Logout</Link>

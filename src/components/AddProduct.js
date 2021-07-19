@@ -11,7 +11,7 @@ function AddProduct (props) {
     description: "",
     image: ""
   })
-  const { user, firebase, products } = props.context;
+  const { username, firebase, products } = props.context;
 
   const handleChange = (event) => {
     setDatos({
@@ -54,9 +54,16 @@ function AddProduct (props) {
     }
   };
 
-  return user.data ? (
+  return username ? (
     <Fragment>
-      <h1>Info Product:</h1>
+      <div className="hero is-primary ">
+        <div className="hero-body container">
+          <h4 className="title">Add Product</h4>
+        </div>
+      </div>
+      <br />
+      <br />
+      <div className="container">
         <form onSubmit={save}>
           <div className="columns is-mobile is-centered">
             <div className="column is-one-third">
@@ -92,6 +99,7 @@ function AddProduct (props) {
             </div>
           </div>
         </form>
+      </div>
     </Fragment>
   ) : (
     <Redirect to="/products" />

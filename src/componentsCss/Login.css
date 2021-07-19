@@ -254,6 +254,18 @@ input[type=text]:placeholder {
   animation-delay: 1s;
 }
 
+.label-checkbox {
+  display:inline;
+  border:0;
+  padding:10px;
+  margin:10px;
+  background:none;
+  color:#417074;
+  font-family: arial, sans-serif;
+  font-size: 0.8em;
+  line-height:0.8em;
+}
+
 .enlace {
   display:inline;
   border:0;

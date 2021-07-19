@@ -8,7 +8,7 @@ import swal from 'sweetalert';
 function ProductItem (props) {
   const [amount, setAmount] = useState(1);
   const { product } = props;
-  const { user, firebase, carts } = props.context;
+  const { username, firebase, carts } = props.context;
 
   const incrementCount = () => {
     setAmount(amount + 1);
@@ -21,7 +21,7 @@ function ProductItem (props) {
   const addToCart = async cartItem => {
     let update = false;
     let cart = carts;
-    if(user.data){
+    if(username){
       if(cart != null){
         if (cart[cartItem.id]) {
           cart[cartItem.id].amount += cartItem.amount;
@@ -34,17 +34,15 @@ function ProductItem (props) {
         }
       }
       props.context.updateCart(cart);
-      let username = user.data.email;
-      username = username.replaceAll('.', ''); 
       update ? (
-        await firebase.database().ref(`user/${username}/carts/${cartItem.id}/`).update(cart[cartItem.id])
+        await firebase.database().ref(`user/${username.replaceAll('.', '')}/carts/${cartItem.id}/`).update(cart[cartItem.id])
         .then(function (){
           swal("Great!", "Product is on your Cart", "success");
         }).catch((error) => {
           swal("Ups!", "Error on add to Cart", "error");
         })
       ) : (
-        await firebase.database().ref(`user/${username}/carts/${cartItem.id}/`).set(cartItem)
+        await firebase.database().ref(`user/${username.replaceAll('.', '')}/carts/${cartItem.id}/`).set(cartItem)
         .then(function (){
             swal("Great!", "The product was added to cart", "success");
         }).catch((error) => {
@@ -53,7 +51,6 @@ function ProductItem (props) {
       )
     } else {
         swal("Join Us!", "Please login first", "warning");
-        console.log();
     }
   }
     
