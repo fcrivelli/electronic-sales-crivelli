@@ -34,6 +34,10 @@ La estructura a partir de objetos esta compuesta por :
 Se utilizo la posibilidad de crear, iniciar sesión y salir de la sesión.
 El usuario podra ingresar con permisos admin utilizando el checkbox de admin. 
 
+# Versionado compatible 
+
+node -v 8.3.1
+npm -v 16.40.0 (a partir de la version 16 no es compatible con las dependencias)
 
 # Getting Started with Create React App
 
